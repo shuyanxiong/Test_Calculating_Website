@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/d18a08c3-94b0-452d-aa23-01a2e08ac9d5/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/optimal-concrete-beam-volume-quick-demo",
+    "appService.deploySubpath": "."
+}
