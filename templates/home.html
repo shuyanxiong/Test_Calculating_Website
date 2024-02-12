@@ -1,48 +1,104 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Title</title>
-    <!-- Add link to your CSS file -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Plotly.js for the plotting -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Page Title</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #1a202c;
+            font-size: large;
+        }
+        header {
+            background-color: #1f2733;
+            color: white;
+            padding: 20px;
+            width: 70%;
+            text-align: center;
+        }
+        .main-content {
+            background-color: #1f2733;
+            color: white;
+            max-width: 800px;
+            margin: 20px;
+        }
+        .last-updated {
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        #plot {
+            width: 600px;
+            height: 400px;
+            background-color: #f0f0f0;
+            margin: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: 20px;
+        }
+        .input-group {
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            padding: 10px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px;
+            background-color: #1a202c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 20px;
+        }
+        button:hover {
+            background-color: #0039cb;
+        }
+    </style>
 </head>
 <body>
-    <h1>Project Title</h1>
-    <p>This is some introductory text explaining the project...</p>
-    <p>This is some introductory text explaining the project...</p>
-    <p>This is some introductory text explaining the project...</p>
-    <p>This is some introductory text explaining the project...</p>
-    <p>This is some introductory text explaining the project...</p>
-    <form id="inputForm">
-        <table>
-            <tr>
-                <td><label for="input1">Cutting speed of blade (m2/hr):</label></td>
-                <td><input type="number" id="input1" name="input1" value="6"></td>
-            </tr>
-            <tr>
-                <td><label for="input2">Life time of blade (m^2):</label></td>
-                <td><input type="number" id="input2" name="input2" value="30"></td>
-            </tr>
-            <tr>
-                <td><label for="input3">Diameter of blade (m):</label></td>
-                <td><input type="number" id="input3" name="input3" value="0.8"></td>
-            </tr>
-            <tr>
-                <td><label for="input4">Thickness of blade (mm):</label></td>
-                <td><input type="number" id="input4" name="input4" value="2.2"></td>
-            </tr>
-        </table>
-        <button type="button" onclick="submitInput()">Submit</button>
-    </form>
-
-    <div id="plot" style="width:600px;height:400px;"></div>
-
+    <header>
+        <h1>Project Title</h1>
+        <div class="last-updated">Last updated on Dec 21, 2023</div>
+    </header>
+    <div class="main-content">
+        <p>When envisioning the future of architecture, we tend to gravitate towards innovative technologies, new materials and advanced methods. However...</p>
+        <div id="plot"><!-- Plotly plot will be inserted here --></div>
+        <form id="inputForm">
+            <div class="input-group">
+                <label for="input1">Cutting speed of blade (m2/hr):</label>
+                <input type="number" id="input1" name="input1" value="6">
+            </div>
+            <div class="input-group">
+                <label for="input2">Life time of blade (m^2):</label>
+                <input type="number" id="input2" name="input2" value="30">
+            </div>
+            <div class="input-group">
+                <label for="input3">Diameter of blade (m):</label>
+                <input type="number" id="input3" name="input3" value="0.8">
+            </div>
+            <div class="input-group">
+                <label for="input4">Thickness of blade (mm):</label>
+                <input type="number" id="input4" name="input4" value="2.2">
+            </div>
+            <button type="button" onclick="submitInput()">Submit</button>
+        </form>
+    </div>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
+        // Function to handle form submission
+        // Placeholder for the actual function that will process the input and update the plot
         function submitInput() {
             var input1 = document.getElementById('input1').value;
             var input2 = document.getElementById('input2').value;
@@ -67,6 +123,8 @@
                 Plotly.newPlot('plot', JSON.parse(data));
             });
         }
+        // Trigger the plot update with default values on page load
+        document.addEventListener('DOMContentLoaded', submitInput);
     </script>
 </body>
 </html>

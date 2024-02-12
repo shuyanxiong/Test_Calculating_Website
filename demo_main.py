@@ -190,8 +190,8 @@ def demo_main(v_cut_2, a_max_cut_blade, d_blade, t_blade): # m2/hr, m^2, m, mm
         ),
         title='3D Surface Plot: Optimal Solution vs. Ratio and Transportation Distance',
         autosize=False,
-        width=800,
-        height=600,
+        width=600,
+        height=400,
         margin=dict(l=65, r=50, b=65, t=90)
     )
     fig.update_layout(template="simple_white")
