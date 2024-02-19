@@ -192,7 +192,8 @@ def demo_main(cutting_depth, cutting_width, cutting_speed, d_reuse, d_new): # m2
     tolerance = 1e-5
     intersection_func = lambda x: np.interp(x, cutting_length_range, difference_values)
     intersection, = fsolve(intersection_func, cutting_length_range[0], xtol=tolerance)
-
+    print(intersection)
+    
     # Create a line plot using Plotly
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=cutting_length_range, y=difference_values, name='Impact Difference'))    
@@ -233,50 +234,6 @@ def demo_main(cutting_depth, cutting_width, cutting_speed, d_reuse, d_new): # m2
     fig.update_xaxes(range=[0, 6])  # Set x-axis limits
     fig.update_yaxes(range=[-2000, 3000])  # Set y-axis limits
     fig.update_layout(template="simple_white")
-
-    # # Define the range of transportation distances, cutting length, and 'a' values
-    # transportation_distance_range = np.linspace(10, 200, 50)
-    # v_concrete_beam_range = np.linspace(0.5*beam_depth*beam_width, 10*beam_depth*beam_width, 100)
-    # a_values = np.linspace(0.5, 10, 50)
-
-    # # Initialize a 2D array to store the intersection points for different combinations of 'a' and transportation distance
-    # intersection_points = np.zeros((len(a_values), len(transportation_distance_range)))
-
-    # # Loop through all 'a' values and calculate the intersection points
-    # for i, a in enumerate(a_values):
-    #     for j, transportation_distance in enumerate(transportation_distance_range):
-    #         # Initialize arrays to store the reuse impact and new impact values for the current 'a' and transportation distance
-    #         reuse_impact_values = []
-    #         new_impact_values = []
-
-    #         for v_concrete_beam in v_concrete_beam_range:
-        
-    #             # Calculate cutting time and other necessary parameters
-
-    #             cutting_time = cutting_time_beam(cutting_depth, fast_cut_speed_area)
-    #             max_num_concrete_beam = max_concrete_beam(v_concrete_beam, rho_light_reinforced_concrete)
-    #             total_weight_beam = total_weight_concrete_beam(v_concrete_beam, rho_light_reinforced_concrete)
-
-    #             # Calculate reuse impact and new impact
-    #             reuse_impact =  cut_impact(electricity_CO2_emission, cutting_time) * max_num_concrete_beam \
-    #                         + transport_impact_lorry(total_weight_beam, a * transportation_distance) 
-    #             new_impact = manufacturing_cost_beam(light_reinforced_concrete_emission, v_concrete_beam, rho_light_reinforced_concrete) * max_num_concrete_beam \
-    #                     + transport_impact_truck(transportation_distance, total_weight_beam) 
-                        
-    #             # Store the impact values
-    #             reuse_impact_values.append(reuse_impact)
-    #             new_impact_values.append(new_impact)
-                
-    #         # Find the intersection point with tolerance
-    #         tolerance = 1e-5
-    #         intersection_func = lambda x: np.interp(x, v_concrete_beam_range, new_impact_values) - np.interp(x, v_concrete_beam_range, reuse_impact_values)
-    #         intersection, = fsolve(intersection_func, v_concrete_beam_range[0], xtol=tolerance)
-    #         intersection_points[i, j] = intersection
-    #         # intersection_point = intersection_points[i, j]
-    #         print(f"Intersection point for a={a} and transportation distance={transportation_distance}: {intersection_points} m^3")
-
-    # # Create a 3D surface plot using Plotly
-    # fig = go.Figure(data=[go.Surface(z=intersection_points, x=a_values, y=transportation_distance_range)])
 
     # return fig
     return {"plot": fig, "intersection_point": intersection}
