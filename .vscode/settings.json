@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/b9b975d2-a979-4f37-9e15-6b6b091f65e7/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/reuse-concrete",
+    "appService.deploySubpath": "."
+}

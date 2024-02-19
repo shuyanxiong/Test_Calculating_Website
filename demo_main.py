@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 ############################################################################
 ############################################################################
 
-def demo_main(v_cut_2, a_max_cut_blade, d_blade, t_blade): # m2/hr, m^2, m, mm
+def demo_main(v_cut_2, a_max_cut_blade, d_blade, t_blade,transportation_distance): # m2/hr, m^2, m, mm
     # User input for blade parameters
     span_blade = a_max_cut_blade / v_cut_2
     w_blade = np.pi * np.square(d_blade/2) * t_blade * 7.8 # kg (steel density 7800 kg/m3)
@@ -130,14 +130,12 @@ def demo_main(v_cut_2, a_max_cut_blade, d_blade, t_blade): # m2/hr, m^2, m, mm
         return transport_impact_truck
 
     # Define the range of size
-    v_concrete_beam_range = np.linspace(0.1*beam_depth*beam_width, 10*beam_depth*beam_width, 100)  # Example range for cutting length
+    cutting_length = np.linspace(0.01, 8, 100)  # Example range for cutting length
 
     # Initialize arrays to store the reuse impact and new impact values
     reuse_impact_values = []
     new_impact_values = []
-
-    # Set constant transportation distances
-    transportation_distance = 20 # km, assumed constant distance from factory to site
+    difference_impact_values = []
 
     # Define the range of transportation distances, cutting length, and 'a' values
     transportation_distance_range = np.linspace(10, 200, 50)
@@ -177,6 +175,8 @@ def demo_main(v_cut_2, a_max_cut_blade, d_blade, t_blade): # m2/hr, m^2, m, mm
             intersection_func = lambda x: np.interp(x, v_concrete_beam_range, new_impact_values) - np.interp(x, v_concrete_beam_range, reuse_impact_values)
             intersection, = fsolve(intersection_func, v_concrete_beam_range[0], xtol=tolerance)
             intersection_points[i, j] = intersection
+            # intersection_point = intersection_points[i, j]
+            print(f"Intersection point for a={a} and transportation distance={transportation_distance}: {intersection_points} m^3")
 
     # Create a 3D surface plot using Plotly
     fig = go.Figure(data=[go.Surface(z=intersection_points, x=a_values, y=transportation_distance_range)])
@@ -195,7 +195,9 @@ def demo_main(v_cut_2, a_max_cut_blade, d_blade, t_blade): # m2/hr, m^2, m, mm
         margin=dict(l=65, r=50, b=65, t=90)
     )
     fig.update_layout(template="simple_white")
-    return fig
+    # return fig
+    return {"plot": fig, "intersection_points": intersection_points}
+
 
 if __name__ == "__main__":
     demo_main(6, 30, 0.8, 2.2)

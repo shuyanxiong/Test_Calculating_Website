@@ -69,12 +69,16 @@
 </head>
 <body>
     <header>
-        <h1>Project Title</h1>
-        <div class="last-updated">Last updated on Dec 21, 2023</div>
+        <h1>Reuse Concrete</h1>
+        <div class="last-updated">Last updated on Feb 13, 2024</div>
     </header>
     <div class="main-content">
         <p>When envisioning the future of architecture, we tend to gravitate towards innovative technologies, new materials and advanced methods. However...</p>
-        <div id="plot"><!-- Plotly plot will be inserted here --></div>
+        <div id="plot"><!-- Plotly plot will be inserted here -->
+            <div id="intersectionPointMessage"><!-- New element for displaying the intersection point -->
+            </div>
+        <!-- Place this inside your <div class="main-content"> -->
+
         <form id="inputForm">
             <div class="input-group">
                 <label for="input1">Cutting speed of blade (m2/hr):</label>
@@ -120,7 +124,10 @@
             })
             .then(response => response.json())
             .then(data => {
-                Plotly.newPlot('plot', JSON.parse(data));
+                // Plotly.newPlot('plot', JSON.parse(data));
+                Plotly.newPlot('plot', JSON.parse(data.plot)); // Adjusted to access plot from response object
+                  // Update the intersection point message
+                document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${data.intersection_point} m³`; // Adjusted to display intersection point
             });
         }
         // Trigger the plot update with default values on page load
