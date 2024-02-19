@@ -16,7 +16,13 @@ def update_plot():
     user_input = request.json
     # Process input and update Plotly plot
     print(user_input)
-    processed_input = [float(user_input[f"input{i}"]) for i in range(1,6)]
+    
+    try:
+        processed_input = [float(user_input.get(f"input{i}", 0)) for i in range(1, 6)]  # Default to 0 if not found
+    except ValueError:
+        return jsonify({"error": "Invalid input"}), 400  # Bad Request
+    # processed_input = [float(user_input[f"input{i}"]) for i in range(1,6)]
+    
     response_data = demo_main(*processed_input)
     # plot_json = json.dumps(response_data, cls=plotly.utils.PlotlyJSONEncoder)
     plot_json = json.dumps(response_data["plot"], cls=plotly.utils.PlotlyJSONEncoder)

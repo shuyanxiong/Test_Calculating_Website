@@ -173,8 +173,8 @@ def demo_main(cutting_depth, cutting_width, cutting_speed, d_reuse, d_new): # m2
     for cutting_length in cutting_length_range:
         # Calculate cutting time and other necessary parameters
         cutting_time = cutting_time_beam(cutting_depth, cutting_width, cutting_speed)
-        max_num_concrete_beam = max_concrete_beam(cutting_length, rho_light_reinforced_concrete)
-        total_weight_beam = total_weight_concrete_beam(cutting_length, rho_light_reinforced_concrete)
+        max_num_concrete_beam = max_concrete_beam(cutting_length,cutting_depth, cutting_width,rho_light_reinforced_concrete)
+        total_weight_beam = total_weight_concrete_beam(cutting_length,cutting_depth, cutting_width, rho_light_reinforced_concrete)
         # print(max_num_concrete_beam,total_weight_beam)
         
         # Calculate reuse impact and new impact
@@ -282,5 +282,5 @@ def demo_main(cutting_depth, cutting_width, cutting_speed, d_reuse, d_new): # m2
     return {"plot": fig, "intersection_point": intersection}
 
 
-# if __name__ == "__main__":
-#     demo_main(0.4,0.4,6,100,100)
+if __name__ == "__main__":
+    demo_main(0.4,0.4,6,100,100)
