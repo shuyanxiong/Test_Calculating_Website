@@ -16,13 +16,13 @@ def update_plot():
     user_input = request.json
     # Process input and update Plotly plot
     print(user_input)
-    processed_input = [float(user_input[f"input{i}"]) for i in range(1,5)]
+    processed_input = [float(user_input[f"input{i}"]) for i in range(1,6)]
     response_data = demo_main(*processed_input)
     # plot_json = json.dumps(response_data, cls=plotly.utils.PlotlyJSONEncoder)
     plot_json = json.dumps(response_data["plot"], cls=plotly.utils.PlotlyJSONEncoder)
     # Include intersection points in the response
-    return jsonify(plot=plot_json, intersection_points=response_data["intersection_points"].tolist())
-    # return jsonify(plot_json)
+    # return jsonify(plot=plot_json, intersection_point=response_data["intersection_point"].tolist())
+    return jsonify(plot_json)
 
 if __name__ == '__main__':
     app.run(debug=True)

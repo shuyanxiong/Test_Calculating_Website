@@ -81,22 +81,27 @@
 
         <form id="inputForm">
             <div class="input-group">
-                <label for="input1">Cutting speed of blade (m2/hr):</label>
-                <input type="number" id="input1" name="input1" value="6">
+                <label for="input5">Cutting Depth (m):</label>
+                <input type="number" id="input5" name="input5" value="0.4">
             </div>
             <div class="input-group">
-                <label for="input2">Life time of blade (m^2):</label>
-                <input type="number" id="input2" name="input2" value="30">
+                <label for="input6">Cutting Width (m):</label>
+                <input type="number" id="input6" name="input6" value="0.4">
             </div>
             <div class="input-group">
-                <label for="input3">Diameter of blade (m):</label>
-                <input type="number" id="input3" name="input3" value="0.8">
+                <label for="input7">Cutting Speed (m/min):</label>
+                <input type="number" id="input7" name="input7" value="1.08">
             </div>
             <div class="input-group">
-                <label for="input4">Thickness of blade (mm):</label>
-                <input type="number" id="input4" name="input4" value="2.2">
+                <label for="input8">Distance for Reuse (km):</label>
+                <input type="number" id="input8" name="input8" value="20">
+            </div>
+            <div class="input-group">
+                <label for="input9">Distance for New Material (km):</label>
+                <input type="number" id="input9" name="input9" value="100">
             </div>
             <button type="button" onclick="submitInput()">Submit</button>
+            
         </form>
     </div>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -108,6 +113,7 @@
             var input2 = document.getElementById('input2').value;
             var input3 = document.getElementById('input3').value;
             var input4 = document.getElementById('input4').value;
+            var input5 = document.getElementById('input5').value;
             
             // AJAX request to Flask
             fetch('/update_plot', {
@@ -119,7 +125,8 @@
                     input1: input1,
                     input2: input2,
                     input3: input3,
-                    input4: input4
+                    input4: input4,
+                    inpu45: input5
                 })
             })
             .then(response => response.json())
