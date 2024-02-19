@@ -21,8 +21,8 @@ def update_plot():
     # plot_json = json.dumps(response_data, cls=plotly.utils.PlotlyJSONEncoder)
     plot_json = json.dumps(response_data["plot"], cls=plotly.utils.PlotlyJSONEncoder)
     # Include intersection points in the response
-    # return jsonify(plot=plot_json, intersection_point=response_data["intersection_point"].tolist())
-    return jsonify(plot_json)
+    return jsonify(plot=plot_json, intersection_point=response_data["intersection_point"].tolist())
+    # return jsonify(plot_json)
 
 if __name__ == '__main__':
     app.run(debug=True)

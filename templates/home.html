@@ -81,24 +81,24 @@
 
         <form id="inputForm">
             <div class="input-group">
-                <label for="input5">Cutting Depth (m):</label>
-                <input type="number" id="input5" name="input5" value="0.4">
+                <label for="input1">Cutting Depth (m):</label>
+                <input type="number" id="input1" name="input1" value="0.4">
             </div>
             <div class="input-group">
-                <label for="input6">Cutting Width (m):</label>
-                <input type="number" id="input6" name="input6" value="0.4">
+                <label for="input2">Cutting Width (m):</label>
+                <input type="number" id="input2" name="input2" value="0.4">
             </div>
             <div class="input-group">
-                <label for="input7">Cutting Speed (m/min):</label>
-                <input type="number" id="input7" name="input7" value="1.08">
+                <label for="input3">Cutting Speed (m/min):</label>
+                <input type="number" id="input3" name="input3" value="6">
             </div>
             <div class="input-group">
-                <label for="input8">Distance for Reuse (km):</label>
-                <input type="number" id="input8" name="input8" value="20">
+                <label for="input4">Distance for Reuse (km):</label>
+                <input type="number" id="input4" name="input4" value="100">
             </div>
             <div class="input-group">
-                <label for="input9">Distance for New Material (km):</label>
-                <input type="number" id="input9" name="input9" value="100">
+                <label for="input5">Distance for New Material (km):</label>
+                <input type="number" id="input5" name="input5" value="100">
             </div>
             <button type="button" onclick="submitInput()">Submit</button>
             
@@ -134,7 +134,7 @@
                 // Plotly.newPlot('plot', JSON.parse(data));
                 Plotly.newPlot('plot', JSON.parse(data.plot)); // Adjusted to access plot from response object
                   // Update the intersection point message
-                document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${data.intersection_point} m³`; // Adjusted to display intersection point
+                document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${data.intersection_point} m`; // Adjusted to display intersection point
             });
         }
         // Trigger the plot update with default values on page load
