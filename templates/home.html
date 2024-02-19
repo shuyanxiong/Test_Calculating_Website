@@ -131,10 +131,10 @@
             })
             .then(response => response.json())
             .then(data => {
-                Plotly.newPlot('plot', JSON.parse(data));
-                // Plotly.newPlot('plot', JSON.parse(data.plot)); // Adjusted to access plot from response object
+                // Plotly.newPlot('plot', JSON.parse(data));
+                Plotly.newPlot('plot', JSON.parse(data.plot)); // Adjusted to access plot from response object
                 // Update the intersection point message
-                // document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${data.intersection_point} m`; // Adjusted to display intersection point
+                document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${data.intersection_point} m`; // Adjusted to display intersection point
             });
         }
         // Trigger the plot update with default values on page load
