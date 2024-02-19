@@ -278,8 +278,8 @@ def demo_main(cutting_depth, cutting_width, cutting_speed, d_reuse, d_new): # m2
     # # Create a 3D surface plot using Plotly
     # fig = go.Figure(data=[go.Surface(z=intersection_points, x=a_values, y=transportation_distance_range)])
 
-    # return fig
-    return {"plot": fig, "intersection_point": intersection}
+    return fig
+    # return {"plot": fig, "intersection_point": intersection}
 
 
 if __name__ == "__main__":
