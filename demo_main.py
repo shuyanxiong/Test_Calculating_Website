@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 ############################################################################
 ############################################################################
 
-def demo_main(cutting_depth, cutting_width, cutting_speed, d_reuse, d_new): # m2/hr, m^2, m, mm
+def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new): # m2/hr, m^2, m, mm
 
     # @ parameters for blades
     # cutting speed of blade
@@ -56,7 +56,7 @@ def demo_main(cutting_depth, cutting_width, cutting_speed, d_reuse, d_new): # m2
     # @ parameters for cutting
     # fast_cut_speed_area = 6 # m2/hour
     # slow_cut_speed_area = 3 # m2/hour
-    # cutting_speed = 2-(2-0.7)/(15-5)*(12-5) # 1.08m/min @ 12cm depth
+    cutting_speed = 2-(2-0.7)/(15-5)*(12-5) # 1.08m/min @ 12cm depth
 
     # @ transportation parameters
     distance_factory_b = 100 # km
