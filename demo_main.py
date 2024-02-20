@@ -241,3 +241,6 @@ def demo_main(cutting_depth, cutting_width, cutting_speed, d_reuse, d_new): # m2
 
 if __name__ == "__main__":
     demo_main(0.4,0.4,6,100,100)
+# change beam or slab
+# change energy used and consumption emission
+# change rebar ratio
