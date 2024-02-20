@@ -31,16 +31,25 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     rho_concrete = 2150 # kg/m3 lean concrete
 
     # @ CO2 emission of materials
+
+    # light_reinforced_concrete_emission = 0.165 # kgCO2eq/kg from KBOB for Switzerland
+    # hard_reinforced_concrete_emission = 0.358 # kgCO2eq/kg from KBOB for Switzerland
+    # brick_emission = 0.267 
     concrete_emission = 0.0408 # kgCO2eq/kg IPCC2021 EcoInvent 3.10, lean concrete production, with cement CEM II/B | lean concrete | Cutoff, U
     civil_concrete_emission = 0.0903 # kgCO2eq/kg IPCC2021 EcoInvent 3.10, concrete production, 37MPa, for civil engineering, with cement, Portland | concrete, 37MPa | Cutoff, U
     steel_CO2_emission = 2.3173 # kgCO2eq/kg IPCC2021 EcoInvent 3.10, market for reinforcing steel | reinforcing steel | Cutoff, U
 
     # https://oneclicklca.zendesk.com/hc/en-us/articles/360020943800-Average-Quantities-of-Reinforcement-in-Concrete
-    light_reinforce_ratio = 0.015 # 1.5% of the volume of concrete
-    hard_reinforce_ratio = 0.06 # 6% of the volume of concrete
+    light_reinforce_ratio_beam = 0.032 # 3.2% of the volume of concrete
+    hard_reinforce_ratio_beam = 0.045 # 4.5% of the volume of concrete
+    light_reinforce_ratio_slab = 0.009 # 0.9% of the volume of concrete
+    hard_reinforce_ratio_slab = 0.017 # 1.7% of the volume of concrete
 
-    light_reinforced_concrete_emission = (1-light_reinforce_ratio)*concrete_emission + light_reinforce_ratio*steel_CO2_emission  # kgCO2eq/kg, low strength concrete
-    hard_reinforced_concrete_emission = (1-hard_reinforce_ratio)*civil_concrete_emission + hard_reinforce_ratio*steel_CO2_emission # kgCO2eq/kg, high strength concrete
+    light_reinforced_concrete_emission_beam = (1-light_reinforce_ratio_beam)*concrete_emission + light_reinforce_ratio_beam*steel_CO2_emission  # kgCO2eq/kg, low strength concrete
+    hard_reinforced_concrete_emission_beam = (1-hard_reinforce_ratio_beam)*civil_concrete_emission + hard_reinforce_ratio_beam*steel_CO2_emission # kgCO2eq/kg, high strength concrete
+    light_reinforced_concrete_emission_slab = (1-light_reinforce_ratio_slab)*concrete_emission + light_reinforce_ratio_slab*steel_CO2_emission  # kgCO2eq/kg, low strength concrete
+    hard_reinforced_concrete_emission_slab = (1-hard_reinforce_ratio_slab)*civil_concrete_emission + hard_reinforce_ratio_slab*steel_CO2_emission # kgCO2eq/kg, high strength concrete
+
 
     green_electricity_CO2_emission = 0.0023 # kgCO2eq/kWh IPCC2021 EcoInvent 3.10, market for electricity, medium voltage | electricity, medium voltage | Cutoff, U CH
     gray_electricity_CO2_emission = 0.9230 # kgCO2eq/kWh IPCC2021 EcoInvent 3.10, market for electricity, medium voltage | electricity, medium voltage | Cutoff, U CN
@@ -49,14 +58,19 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     diamond_blade_CO2_emission = (334.123*80/35)/span_blade # kgCO2/h # reference: https://ieeexplore.ieee.org/document/10021341
 
     # @ wall saw parameters
+    # power = 20 # kW, Hilti wall saw DST 20-CA 
     power = 32 # kW, Hilti wall saw DST 20-CA (or 40kVA generator using diesel fuel which is around 32kW)
     span_machine = 1000 # hr
     w_machine = 32 # kg
 
     # @ parameters for cutting
-    # fast_cut_speed_area = 6 # m2/hour
-    # slow_cut_speed_area = 3 # m2/hour
+    fast_cut_speed_area = 6 # m2/hour
+    slow_cut_speed_area = 3 # m2/hour
     cutting_speed = 2-(2-0.7)/(15-5)*(12-5) # 1.08m/min @ 12cm depth
+
+    # @ dimensional parameters for a concrete beam/wall
+    cutting_width = beam_width = 0.4 # meters
+    cutting_depth = beam_depth = 0.4
 
     # @ transportation parameters
     distance_factory_b = 100 # km
@@ -79,9 +93,9 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     # assume cutting concrete has 2% loss
     glue_roundup_ratio =0.02
     
-        # calculate the maximum number of concrete beam to be transported for reuse
-    def max_concrete_beam(cutting_length,cutting_depth, cutting_width, rho):
-        v_concrete_beam = cutting_length * cutting_depth * cutting_width
+    # calculate the maximum number of concrete beam to be transported for reuse
+    def max_concrete_beam(cutting_length,cutting_depth, cutting_width,rho):
+        v_concrete_beam = cutting_length * cutting_depth*cutting_width
         weight_concrete_beam = v_concrete_beam * rho
         max_num_concrete_beam = np.minimum(np.floor(lorry_space_capacity / v_concrete_beam),np.floor(lorry_load_capacity / weight_concrete_beam))
         return max_num_concrete_beam
@@ -95,14 +109,14 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
 
     # calculate the total weight of concrete beam to be transported for reuse
     def total_weight_concrete_beam(cutting_length,cutting_depth, cutting_width, rho):
-        v_concrete_beam = cutting_length * cutting_depth * cutting_width
+        v_concrete_beam = cutting_length *cutting_depth* cutting_width
         weight_concrete_beam = v_concrete_beam * rho
         max_num_concrete_beam = np.minimum(np.floor(lorry_space_capacity / v_concrete_beam),np.floor(lorry_load_capacity / weight_concrete_beam)) #7
         total_weight_concrete_beam = max_num_concrete_beam * weight_concrete_beam
         return total_weight_concrete_beam
 
     # calculate the carbon emission for manufacturing the concrete beam
-    def manufacturing_cost_beam(carbon_emission, cutting_length, rho):
+    def manufacturing_cost_beam(carbon_emission, cutting_length, cutting_depth, cutting_width, rho):
         beam_volumne = cutting_length * cutting_depth* cutting_width
         manufacturing_CO2_cost = carbon_emission * beam_volumne * rho
         return manufacturing_CO2_cost
@@ -141,6 +155,7 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
         cutting_time_speed = 2 * (cutting_width /cutting_speed * cutting_pass + cutting_width/(cutting_speed/2))/60 # hours # two cuts
         cutting_time_area = 2 * ( cutting_width * cutting_depth/ cut_speed_area + cutting_width/(cutting_speed/2)/60)
         return max(cutting_time_speed, cutting_time_area)
+        # return cutting_time_area
 
     # calculate the cutting time for the concrete wall
     def cutting_time_wall(wall_width, wall_height, wall_thickness, cut_speed_area):
@@ -152,6 +167,7 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
         cutting_time_speed = (cutting_length /cutting_speed * cutting_pass + cutting_length/(cutting_speed/2))/60 # hours 
         cutting_time_area = ( cutting_length * cutting_depth/ cut_speed_area  + cutting_length/(cutting_speed/2)/60)  
         return max(cutting_time_speed, cutting_time_area)
+        # return cutting_time_area
 
     # calculate the carbon emission for transportation of reused concrete beam
     def transport_impact_lorry(total_weight_concrete_beam,distance): # assume fully loaded lorry
@@ -172,7 +188,7 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     # Calculate reuse impact and new impact for each cutting length
     for cutting_length in cutting_length_range:
         # Calculate cutting time and other necessary parameters
-        cutting_time = cutting_time_beam(cutting_depth, cutting_width, cutting_speed)
+        cutting_time = cutting_time_beam(cutting_depth, cutting_width, cutting_speed_area)
         max_num_concrete_beam = max_concrete_beam(cutting_length,cutting_depth, cutting_width,rho_light_reinforced_concrete)
         total_weight_beam = total_weight_concrete_beam(cutting_length,cutting_depth, cutting_width, rho_light_reinforced_concrete)
         # print(max_num_concrete_beam,total_weight_beam)
@@ -180,8 +196,8 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
         # Calculate reuse impact and new impact
         reuse_impact =  transport_impact_lorry(total_weight_beam, d_reuse)\
                         + cut_impact(cutting_time) * max_num_concrete_beam\
-                            + reuse_glue_cost(total_weight_beam, glue_roundup_ratio, light_reinforced_concrete_emission)         
-        new_impact = manufacturing_cost_beam(light_reinforced_concrete_emission, cutting_length, rho_light_reinforced_concrete) * max_num_concrete_beam\
+                            + reuse_glue_cost(total_weight_beam, glue_roundup_ratio, light_reinforced_concrete_emission_beam)         
+        new_impact = manufacturing_cost_beam(light_reinforced_concrete_emission_beam, cutting_length,cutting_depth, cutting_width, rho_light_reinforced_concrete) * max_num_concrete_beam\
                     + transport_impact_truck(d_new, total_weight_beam)
         difference = reuse_impact - new_impact
         
