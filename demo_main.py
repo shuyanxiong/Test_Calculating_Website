@@ -209,6 +209,8 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     intersection_func = lambda x: np.interp(x, cutting_length_range, difference_values)
     intersection, = fsolve(intersection_func, cutting_length_range[0], xtol=tolerance)
     print(intersection)
+    # round to 2 decimal places
+    intersection = round(intersection,2)
     
     # Create a line plot using Plotly
     fig = go.Figure()

@@ -10,6 +10,7 @@ app = Flask(__name__, template_folder='templates')
 def home():
     return render_template('home.html')
 
+
 @app.route('/update_plot', methods=['POST'])
 def update_plot():
     # Get user input

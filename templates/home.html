@@ -104,6 +104,8 @@
             
         </form>
     </div>
+
+
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
         // Function to handle form submission
@@ -129,16 +131,71 @@
                     input5: input5
                 })
             })
+
             .then(response => response.json())
             .then(data => {
                 // Plotly.newPlot('plot', JSON.parse(data));
                 Plotly.newPlot('plot', JSON.parse(data.plot)); // Adjusted to access plot from response object
-                // Update the intersection point message
-                document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${data.intersection_point} m`; // Adjusted to display intersection point
-            });
+                // Update the intersection point message with limited decimal places
+                //document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${parseFloat(data.intersection_points).toFixed(2)} m³`; // Adjusted to display intersection point with 2 decimal places
+              document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${data.intersection_point} m`; // Adjusted to display intersection point
+            
+               });
         }
         // Trigger the plot update with default values on page load
         document.addEventListener('DOMContentLoaded', submitInput);
     </script>
+
+    <script src="https://threejs.org/build/three.js"></script>
+    <script>
+        
+        function visualizeBeam(depth, width, length) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+            const renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+        
+            const geometry = new THREE.BoxGeometry(depth, width, length);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+        
+            camera.position.z = 5;
+        
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+            animate();
+            
+        }
+
+        function fetchAndVisualizeBeam() {
+            fetch('/calculate_beam', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    // Example dimensions, replace with actual input fields
+                    length: 2,
+                    width: 0.5,
+                    height: 0.5
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                visualizeBeam(data.depth, data.width, data.length);
+            });
+        }
+        
+        // Example call, replace with actual data from backend
+        visualizeBeam(1, 1, 1);
+        </script>
+        
+
+
 </body>
 </html>
