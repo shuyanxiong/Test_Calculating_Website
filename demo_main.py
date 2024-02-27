@@ -68,9 +68,9 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     slow_cut_speed_area = 3 # m2/hour
     cutting_speed = 2-(2-0.7)/(15-5)*(12-5) # 1.08m/min @ 12cm depth
 
-    # @ dimensional parameters for a concrete beam/wall
-    cutting_width = beam_width = 0.4 # meters
-    cutting_depth = beam_depth = 0.4
+    # # @ dimensional parameters for a concrete beam/wall
+    # cutting_width = beam_width = 0.4 # meters
+    # cutting_depth = beam_depth = 0.4
 
     # @ transportation parameters
     distance_factory_b = 100 # km
@@ -257,8 +257,8 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     return {"plot": fig, "intersection_point": intersection}
 
 
-if __name__ == "__main__":
-    demo_main(0.4,0.4,6,100,100)
+# if __name__ == "__main__":
+#     demo_main(1.4,0.4,6,100,100)
 # change beam or slab
 # change energy used and consumption emission
 # change rebar ratio
