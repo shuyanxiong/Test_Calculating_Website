@@ -261,7 +261,7 @@ def demo_main(beam_depth, beam_width,cutting_speed_area, d_reuse, d_new): # m2/h
         )
     )
     fig.update_xaxes(range=[0, 6])  # Set x-axis limits
-    fig.update_yaxes(range=[-2000, 3000])  # Set y-axis limits
+    fig.update_yaxes(range=[-4000, 3000])  # Set y-axis limits
     fig.update_layout(template="simple_white")
 
     # return fig
