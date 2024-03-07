@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 ############################################################################
 ############################################################################
 
-def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new): # m2/hr, m^2, m, mm
+def demo_main(beam_depth, beam_width,cutting_speed_area, d_reuse, d_new): # m2/hr, m^2, m, mm
 
     # @ parameters for blades
     # cutting speed of blade
@@ -81,10 +81,6 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     fast_cut_speed_area = 6 # m2/hour
     slow_cut_speed_area = 3 # m2/hour
     cutting_speed = 2-(2-0.7)/(15-5)*(12-5) # 1.08m/min @ 12cm depth
-
-    # @ dimensional parameters for a concrete beam/wall
-    cutting_width = beam_width = 0.4 # meters
-    cutting_depth = beam_depth = 0.4
 
     # @ transportation parameters
     distance_factory_b = 100 # km
@@ -203,16 +199,16 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
     # Calculate reuse impact and new impact for each cutting length
     for cutting_length in cutting_length_range:
         # Calculate cutting time and other necessary parameters
-        cutting_time = cutting_time_beam(cutting_depth, cutting_width, cutting_speed_area)
-        max_num_concrete_beam = max_concrete_beam(cutting_length,cutting_depth, cutting_width,rho_light_reinforced_concrete_beam)
-        total_weight_beam = total_weight_concrete_beam(cutting_length,cutting_depth, cutting_width, rho_light_reinforced_concrete_beam)
+        cutting_time = cutting_time_beam(beam_depth, beam_width, cutting_speed_area)
+        max_num_concrete_beam = max_concrete_beam(cutting_length,beam_depth, beam_width,rho_light_reinforced_concrete_beam)
+        total_weight_beam = total_weight_concrete_beam(cutting_length,beam_depth, beam_width, rho_light_reinforced_concrete_beam)
         # print(max_num_concrete_beam,total_weight_beam)
         
         # Calculate reuse impact and new impact
         reuse_impact =  transport_impact_lorry(total_weight_beam, d_reuse)\
                         + cut_impact(cutting_time) * max_num_concrete_beam\
                             + reuse_glue_cost(total_weight_beam, glue_roundup_ratio, light_reinforced_concrete_emission_beam)         
-        new_impact = manufacturing_cost_beam(light_reinforced_concrete_emission_beam, cutting_length,cutting_depth, cutting_width, rho_light_reinforced_concrete) * max_num_concrete_beam\
+        new_impact = manufacturing_cost_beam(light_reinforced_concrete_emission_beam, cutting_length, beam_depth, beam_width, rho_light_reinforced_concrete_beam) * max_num_concrete_beam\
                     + transport_impact_truck(d_new, total_weight_beam)
         difference = reuse_impact - new_impact
         
@@ -273,7 +269,7 @@ def demo_main(cutting_depth, cutting_width, cutting_speed_area, d_reuse, d_new):
 
 
 # if __name__ == "__main__":
-#     demo_main(0.4,0.4,6,100,100)
+#     demo_main(1.2,0.4,6,10,100)
 # change beam or slab
 # change energy used and consumption emission
 # change rebar ratio
