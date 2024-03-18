@@ -62,7 +62,12 @@ button:hover {
     font-size: 16px; /* or any size you prefer */
 }
 
-
+.container {
+    width: 90%; /* Makes the container take up 90% of the parent element's width */
+    max-width: 1200px; /* Limits how wide the container can get, preserving layout on very large screens */
+    margin: auto; /* Centers the container */
+  }
+  
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
     body {
@@ -76,5 +81,9 @@ button:hover {
 
     .input-group, button {
         margin-top: 10px;
+    }
+    #plot {
+        width: 100%;
+        height: auto;
     }
 }

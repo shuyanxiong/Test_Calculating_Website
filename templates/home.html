@@ -4,74 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reuse Concrete</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 20px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #1a202c;
-            font-size: large;
-        }
-        header {
-            background-color: #1f2733;
-            color: white;
-            padding: 20px;
-            width: 70%;
-            text-align: center;
-        }
-        .main-content {
-            background-color: #1f2733;
-            color: white;
-            max-width: 800px;
-            margin: 20px;
-        }
-        .last-updated {
-            font-style: italic;
-            margin-bottom: 20px;
-        }
-        #plot {
-            width: 800px;
-            height: 600px;
-            background-color: #f0f0f0;
-            margin: 20px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            width: 300px;
-            margin: 20px;
-        }
-        .input-group {
-            margin-top: 20px;
-        }
-        label {
-            font-weight: bold;
-        }
-        input {
-            padding: 10px;
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px;
-            background-color: #1a202c;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin: 20px;
-        }
-        button:hover {
-            background-color: #0039cb;
-        }
-
-        .uniform-text {
-            font-size: 16px; /* or any size you prefer */
-        }
-
-    </style> -->
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
@@ -87,14 +20,13 @@
         <div id="plot"><!-- Plotly plot will be inserted here -->
     </div>
 
-
             <div id="intersectionPointMessage"><!-- New element for displaying the intersection point -->
             </div>
         <!-- Place this inside your <div class="main-content"> -->
 
     <div class="input-group">
         <label for="structureType">Structure Type:</label>
-        <select id="structureType" name="structureType">
+        <select id="structureType" name="structureType" style="font-size: 18px;">
             <option value="beam">Beam</option>
             <option value="wall">Wall</option>
         </select>
@@ -203,7 +135,7 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data); // This will show you exactly what the backend sent
-                Plotly.newPlot('plot', JSON.parse(data.plot));
+                Plotly.newPlot('plot', JSON.parse(data.plot), {responsive: true});
                 // Check which key exists in the response and update the UI accordingly
                 let message = '';
                 if ('reuse_or_not' in data) {
