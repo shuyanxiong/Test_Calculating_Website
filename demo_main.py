@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 ############################################################################
 ############################################################################
 
-def demo_main(beam_depth, beam_width,cutting_speed_area, d_reuse, d_new): # m2/hr, m^2, m, mm
+def demo_main_beam(beam_depth, beam_width,cutting_speed_area, d_reuse, d_new): # m2/hr, m^2, m, mm
 
     # @ parameters for blades
     # cutting speed of blade
@@ -273,3 +273,238 @@ def demo_main(beam_depth, beam_width,cutting_speed_area, d_reuse, d_new): # m2/h
 # change beam or slab
 # change energy used and consumption emission
 # change rebar ratio
+
+
+# import libraries
+import numpy as np
+from scipy.optimize import fsolve
+import plotly.graph_objects as go
+
+
+############################################################################
+############################################################################
+############################################################################
+
+def demo_main_wall(wall_thickness, cut_width, cut_length, cutting_speed_area, d_reuse, d_new): # m2/hr, m^2, m, mm
+
+    # @ parameters for blades
+    # cutting speed of blade
+    v_cut_2 = 6 # m2/hr
+    # life time of blade
+    a_max_cut_blade = 30 # m^2 for 6-8 m2/hr or 15 m^2 for 3-4 m2/hr
+    span_blade = a_max_cut_blade/v_cut_2  # = 5hr 
+    # diameter of blade
+    d_blade = 0.8 # m (600 mm … 1,600 mm)
+    # thickness of blade
+    t_blade = 2.2/1000 # m
+    # weight of blade
+    w_blade = np.pi * np.square(d_blade/2) * t_blade * 7800 # kg (steel density 7800 kg/m3)
+
+    # @ parameters for materials 
+    # density of materials
+    rho_concrete = 2150 # kg/m3 lean concrete
+    rho_steel = 7850 # kg/m3
+
+    # @ CO2 emission of materials
+
+    # light_reinforced_concrete_emission = 0.165 # kgCO2eq/kg from KBOB for Switzerland
+    # hard_reinforced_concrete_emission = 0.358 # kgCO2eq/kg from KBOB for Switzerland
+    # brick_emission = 0.267 
+    concrete_emission = 0.0408 # kgCO2eq/kg IPCC2021 EcoInvent 3.10, lean concrete production, with cement CEM II/B | lean concrete | Cutoff, U
+    civil_concrete_emission = 0.0903 # kgCO2eq/kg IPCC2021 EcoInvent 3.10, concrete production, 37MPa, for civil engineering, with cement, Portland | concrete, 37MPa | Cutoff, U
+    steel_CO2_emission = 2.3173 # kgCO2eq/kg IPCC2021 EcoInvent 3.10, market for reinforcing steel | reinforcing steel | Cutoff, U
+
+    # https://oneclicklca.zendesk.com/hc/en-us/articles/360020943800-Average-Quantities-of-Reinforcement-in-Concrete
+ 
+    light_reinforce_ratio_slab_v = 0.009 # 0.9% of the volume of concrete
+    # translated to mass ratio
+    light_reinforce_ratio_slab = light_reinforce_ratio_slab_v*rho_steel/(light_reinforce_ratio_slab_v*rho_steel+(1-light_reinforce_ratio_slab_v)*rho_concrete)
+    hard_reinforce_ratio_slab_v = 0.017 # 1.7% of the volume of concrete
+    # translated to mass ratio
+    hard_reinforce_ratio_slab = hard_reinforce_ratio_slab_v*rho_steel/(hard_reinforce_ratio_slab_v*rho_steel+(1-hard_reinforce_ratio_slab_v)*rho_concrete)
+
+    rho_light_reinforced_concrete_slab = (1-light_reinforce_ratio_slab)*rho_concrete + light_reinforce_ratio_slab*rho_steel # kg/m3, low strength concrete
+    rho_hard_reinforced_concrete_slab = (1-hard_reinforce_ratio_slab)*rho_concrete + hard_reinforce_ratio_slab*rho_steel # kg/m3, high strength concrete
+
+    light_reinforced_concrete_emission_slab = (1-light_reinforce_ratio_slab)*concrete_emission + light_reinforce_ratio_slab*steel_CO2_emission  # kgCO2eq/kg, low strength concrete
+    hard_reinforced_concrete_emission_slab = (1-hard_reinforce_ratio_slab)*civil_concrete_emission + hard_reinforce_ratio_slab*steel_CO2_emission # kgCO2eq/kg, high strength concrete
+
+
+    green_electricity_CO2_emission = 0.0023 # kgCO2eq/kWh IPCC2021 EcoInvent 3.10, market for electricity, medium voltage | electricity, medium voltage | Cutoff, U CH
+    gray_electricity_CO2_emission = 0.9230 # kgCO2eq/kWh IPCC2021 EcoInvent 3.10, market for electricity, medium voltage | electricity, medium voltage | Cutoff, U CN
+    generator_CO2_emission = 76.4400 # kgCO2eq/hour IPCC2021 EcoInvent 3.10, machine operation, diesel, >= 74.57 kW, generators | machine operation, diesel, >= 74.57 kW, generators | Cutoff, U
+
+    diamond_blade_CO2_emission = (334.123*80/35)/span_blade # kgCO2/h # reference: https://ieeexplore.ieee.org/document/10021341
+
+    # @ wall saw parameters
+    # power = 20 # kW, Hilti wall saw DST 20-CA 
+    power = 32 # kW, Hilti wall saw DST 20-CA (or 40kVA generator using diesel fuel which is around 32kW)
+    span_machine = 1000 # hr
+    w_machine = 32 # kg
+
+    # @ parameters for cutting
+    cutting_speed = 2-(2-0.7)/(15-5)*(12-5) # 1.08m/min @ 12cm depth
+    
+    lorry_CO2_emission = truck_CO2_emission = 0.15221 ## kgCO2eq/tonkm EURO6, IPCC2021 EcoInvent 3.10, , transport, freight, lorry, all sizes, EURO3 to generic market for transport, freight, lorry, unspecified | transport, freight, lorry, unspecified | Cutoff, U
+    size_truck = 9 # m3
+    weight_concrete_truck = size_truck * rho_concrete # 19.35 ton
+    lorry_load_capacity = 12e3 # ton
+    lorry_space_capacity = 9
+    # Additional information:
+    # max cutting depth 73 cm
+    # guide cut at half power consumption at 4cm depth
+
+    # assume cutting concrete has 2% loss
+    glue_roundup_ratio =0.02
+
+    # calculate the maximum number of concrete beam to be transported for reuse
+    def max_concrete_wall(cut_width,cut_length,wall_thickness,rho):
+        v_concrete_wall = cut_width * cut_length * wall_thickness
+        weight_concrete_wall = v_concrete_wall * rho
+        max_num_concrete_wall = np.minimum(np.floor(lorry_space_capacity / v_concrete_wall),np.floor(lorry_load_capacity / weight_concrete_wall))
+        return max_num_concrete_wall
+
+    # calculate the carbon emission for manufacturing the concrete wall
+    def manufacturing_cost_wall(carbon_emission, wall_thickness, cut_width, cut_length, rho):
+        wall_volume = wall_thickness *  cut_width * cut_length
+        manufacturing_CO2_cost = carbon_emission * wall_volume * rho
+        return manufacturing_CO2_cost
+
+    # calculate the carbon emission for cutting the concrete, generator
+    def cut_impact(cutting_time):
+        # impact_energy = (power * cutting_time) * (electricity_CO2_emission) # impact of electricity consumption 
+        impact_energy = (cutting_time) * (generator_CO2_emission) # impact of generator consumption 
+        impact_blade = diamond_blade_CO2_emission * cutting_time
+        impact_machine = cutting_time / span_machine * steel_CO2_emission * w_machine
+        cut_impact = impact_energy + impact_blade + impact_machine
+        return cut_impact
+
+    def reuse_glue_cost(weight,glue_roundup_ratio, carbon_emission):
+        glue_cost = weight * glue_roundup_ratio * carbon_emission
+        return glue_cost
+
+    # calculate the carbon emission for cutting the concrete 
+    def cut_impact_electricity(electricity_CO2_emission, cutting_time):
+        impact_energy = (power * cutting_time) * (electricity_CO2_emission) # impact of electricity consumption 
+        # impact_energy = (cutting_time) * (generator_CO2_emission) # impact of generator consumption 
+        impact_blade = diamond_blade_CO2_emission * cutting_time
+        impact_machine = cutting_time / span_machine * steel_CO2_emission * w_machine
+        cut_impact = impact_energy + impact_blade + impact_machine
+        return cut_impact
+
+    # calculate the cutting time for the concrete wall
+    def cutting_time_wall(wall_width, wall_height, wall_thickness, cut_speed_area):
+        cutting_length = 2*(wall_width+wall_height)
+        cutting_depth = wall_thickness
+        # number of passes
+        cutting_pass = np.ceil(cutting_depth/0.12) * 2 # back and forth cut @12cm depth
+        # cutting time depending on speed or area
+        cutting_time_speed = (cutting_length /cutting_speed * cutting_pass + cutting_length/(cutting_speed/2))/60 # hours 
+        cutting_time_area = ( cutting_length * cutting_depth/ cut_speed_area  + cutting_length/(cutting_speed/2)/60)  
+        return max(cutting_time_speed, cutting_time_area)
+        # return cutting_time_area
+
+    # calculate the carbon emission for transportation of reused concrete 
+    def transport_impact_lorry(total_weight_concrete,distance): # assume fully loaded lorry
+        transport_impact_lorry = distance * total_weight_concrete/1000 * lorry_CO2_emission
+        return transport_impact_lorry
+
+    # calculate the carbon emission for transportation of new concrete
+    def transport_impact_truck(distance,weight_concrete_truck):
+        transport_impact_truck = distance * weight_concrete_truck/1000 * truck_CO2_emission 
+        # transport_impact_truck = concrete_truck_transport * truck_CO2_emission
+        return transport_impact_truck
+  
+     # @ start the calculation
+
+    # Define the range of size
+    wall_width_range = np.linspace(0.001, 8, 100)  # Example range for wall width
+    wall_height_range = np.linspace(0.001, 8, 100)  # Example range for wall height
+    wall_thickness = 0.2
+
+    # Initialize a 2D array for difference values
+    difference_values = np.zeros((len(wall_width_range), len(wall_height_range)))
+
+    for i, wall_width in enumerate(wall_width_range):
+        for j, wall_height in enumerate(wall_height_range):
+            # Calculate volume of concrete wall
+            v_concrete_wall = wall_width * wall_height * wall_thickness
+
+            cutting_time = cutting_time_wall(wall_width, wall_height, wall_thickness, cutting_speed_area)
+            max_num_concrete_wall = max_concrete_wall(wall_width, wall_height, wall_thickness, rho_light_reinforced_concrete_slab)
+            total_weight_wall = v_concrete_wall * rho_light_reinforced_concrete_slab * max_num_concrete_wall
+            
+            # Calculate reuse impact and new impact
+            reuse_impact = cut_impact(cutting_time)* max_num_concrete_wall + transport_impact_lorry(total_weight_wall, d_reuse)\
+                        +  reuse_glue_cost(total_weight_wall, glue_roundup_ratio, light_reinforced_concrete_emission_slab)
+            new_impact = manufacturing_cost_wall(light_reinforced_concrete_emission_slab, wall_thickness, wall_width, wall_height, rho_light_reinforced_concrete_slab) * max_num_concrete_wall\
+                        + transport_impact_truck(d_new, total_weight_wall)
+
+            # Store the impact values
+            difference_values[i, j] = reuse_impact - new_impact
+
+
+    # Convert calculations to code as necessary using provided functions and variables
+
+    # Create a 2D heatmap using Plotly
+    fig = go.Figure(data=go.Heatmap(
+        z=difference_values,
+        x=wall_width_range,
+        y=wall_height_range,
+        colorscale='Viridis',
+        colorbar=dict(title='Impact Difference (kg CO2eq)'),
+        zmin=-1000,  # Set minimum value of the color scale
+        zmax=2000,   # Set maximum value of the color scale
+    ))
+
+
+    # Add a contour plot with a single level at 0 to indicate where impact equals zero
+    fig.add_trace(go.Contour(
+        z=difference_values,
+        x=wall_width_range,
+        y=wall_height_range,
+        contours=dict(
+            start=0,
+            end=0,
+            size=0,
+        ),
+        line=dict(width=2, color='red'),  # Customize line appearance
+        showscale=False,  # Hide contour scale since only one level is used
+
+        colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],  # Set transparent colorscale
+        
+        name='Impact = 0',
+    ))
+
+    fig.update_layout(
+        title='Environmental Impact Difference Across Wall Dimensions',
+        xaxis_title='Wall Width (m)',
+        yaxis_title='Wall Height (m)',
+        autosize=False,
+        width=800,
+        height=600,
+        margin=dict(l=65, r=50, b=65, t=90),
+        template="simple_white"
+    )
+
+    # mark the cut width and length point on the plot
+    fig.add_trace(go.Scatter(x=[cut_width], y=[cut_length], mode='markers', name='Cutting Point', marker=dict(color='black', size=10)))
+    v_concrete_wall = cut_width * cut_length * wall_thickness
+    cutting_time = cutting_time_wall(cut_width, cut_length , wall_thickness, cutting_speed_area)
+    max_num_concrete_wall = max_concrete_wall(cut_width, cut_length, wall_thickness, rho_light_reinforced_concrete_slab)
+    total_weight_wall = v_concrete_wall * rho_light_reinforced_concrete_slab * max_num_concrete_wall
+    
+    # Calculate reuse impact and new impact
+    reuse_impact = cut_impact(cutting_time)* max_num_concrete_wall + transport_impact_lorry(total_weight_wall, d_reuse)\
+                +  reuse_glue_cost(total_weight_wall, glue_roundup_ratio, light_reinforced_concrete_emission_slab)
+    new_impact = manufacturing_cost_wall(light_reinforced_concrete_emission_slab, wall_thickness, cut_width, cut_length, rho_light_reinforced_concrete_slab) * max_num_concrete_wall\
+                + transport_impact_truck(d_new, total_weight_wall)
+    # Store the impact values
+    difference_value = reuse_impact - new_impact
+    # Determine if reuse is beneficial
+    benefit_message = "The reuse is beneficial." if difference_value < 0 else "The new concrete is beneficial."
+    # return fig
+    return {"plot": fig, "reuse_or_not": benefit_message }
+
+# if __name__ == "__main__":
+#     demo_main_wall(0.2,6,3,6,100,100)

@@ -1,0 +1,80 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #1a202c;
+    font-size: large;
+}
+header {
+    background-color: #1f2733;
+    color: white;
+    padding: 20px;
+    width: 70%;
+    text-align: center;
+}
+.main-content {
+    background-color: #1f2733;
+    color: white;
+    max-width: 800px;
+    margin: 20px;
+}
+.last-updated {
+    font-style: italic;
+    margin-bottom: 20px;
+}
+#plot {
+    width: 800px;
+    height: 600px;
+    background-color: #f0f0f0;
+    margin: 20px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: 20px;
+}
+.input-group {
+    margin-top: 20px;
+}
+label {
+    font-weight: bold;
+}
+input {
+    padding: 10px;
+    margin-top: 20px;
+}
+button {
+    padding: 10px;
+    background-color: #1a202c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 20px;
+}
+button:hover {
+    background-color: #0039cb;
+}
+.uniform-text {
+    font-size: 16px; /* or any size you prefer */
+}
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    body {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    header, .main-content, form {
+        padding: 10px;
+    }
+
+    .input-group, button {
+        margin-top: 10px;
+    }
+}

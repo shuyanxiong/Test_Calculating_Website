@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Title</title>
-    <style>
+    <title>Reuse Concrete</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 20px;
@@ -33,8 +34,8 @@
             margin-bottom: 20px;
         }
         #plot {
-            width: 600px;
-            height: 400px;
+            width: 800px;
+            height: 600px;
             background-color: #f0f0f0;
             margin: 20px;
         }
@@ -65,139 +66,162 @@
         button:hover {
             background-color: #0039cb;
         }
-    </style>
+
+        .uniform-text {
+            font-size: 16px; /* or any size you prefer */
+        }
+
+    </style> -->
 </head>
+
 <body>
     <header>
         <h1>Reuse Concrete</h1>
-        <div class="last-updated">Last updated on Feb 19, 2024</div>
+        <div class="last-updated">Last updated on Mar 19, 2024</div>
     </header>
+    
     <div class="main-content">
-        <p>When envisioning the future of architecture, we tend to gravitate towards innovative technologies, new materials and advanced methods. However, people might overlook the potential of reusing existing materials and products. 
+        <p style="line-height: 1.5; font-style: italic;">When envisioning the future of architecture, we tend to gravitate towards innovative technologies, new materials and advanced methods. However, people might overlook the potential of reusing existing materials and products. 
             Presently, there is an emerging momentum towards advocating the principles of a circular economy and reuse is considered as a preferred strategy due to its ability to extend the lifespan of existing products a
             This research focuses on the concept of concrete reuse as a sustainable strategy, examining the limitations for cutting dimensions. </p>
         <div id="plot"><!-- Plotly plot will be inserted here -->
+    </div>
+
+
             <div id="intersectionPointMessage"><!-- New element for displaying the intersection point -->
             </div>
         <!-- Place this inside your <div class="main-content"> -->
 
-        <form id="inputForm">
-            <div class="input-group">
-                <label for="input1">Cutting Depth (m):</label>
-                <input type="number" id="input1" name="input1" value="0.4" step="0.1">
-            </div>
-            <div class="input-group">
-                <label for="input2">Cutting Width (m):</label>
-                <input type="number" id="input2" name="input2" value="0.4" step="0.1">
-            </div>
-            <div class="input-group">
-                <label for="input3">Cutting Speed (m<sup>2</sup>/hr) (with Hilti DST20A, normally 3-6 m<sup>2</sup>/hr):</label>
-                <input type="number" id="input3" name="input3" value="6" step="0.1">
-            </div>
-            <div class="input-group">
-                <label for="input4">Distance for Reuse (km):</label>
-                <input type="number" id="input4" name="input4" value="100">
-            </div>
-            <div class="input-group">
-                <label for="input5">Distance for New Material (km):</label>
-                <input type="number" id="input5" name="input5" value="100">
-            </div>
-            <button type="button" onclick="submitInput()">Submit</button>
-            
-        </form>
+    <div class="input-group">
+        <label for="structureType">Structure Type:</label>
+        <select id="structureType" name="structureType">
+            <option value="beam">Beam</option>
+            <option value="wall">Wall</option>
+        </select>
     </div>
 
 
+        <form id="inputForm">
+            <!-- Beam Inputs -->
+            <div class="input-group beam-input">
+                <label for="beamDepth">Beam Depth (m):</label>
+                <input type="number" id="beamDepth" name="beamDepth" value="0.4" step="0.1">
+            </div>
+            <div class="input-group beam-input">
+                <label for="beamWidth">Beam Width (m):</label>
+                <input type="number" id="beamWidth" name="beamWidth" value="0.4" step="0.1">
+            </div>
+        
+            <!-- Wall Inputs -->
+            <div class="input-group wall-input" style="display:none;">
+                <label for="slabThickness">Wall Thickness (m):</label>
+                <input type="number" id="slabThickness" name="slabThickness" value="0.2" step="0.1">
+            </div>
+            <div class="input-group wall-input" style="display:none;">
+                <label for="cutWidth">Cut Width (m):</label>
+                <input type="number" id="cutWidth" name="cutWidth" value="1" step="0.1">
+            </div>
+            <div class="input-group wall-input" style="display:none;">
+                <label for="cutLength">Cut Length (m):</label>
+                <input type="number" id="cutLength" name="cutLength" value="1" step="0.1">
+            </div>
+        
+            <!-- Common Inputs -->
+            <div class="input-group">
+                <label for="cuttingSpeedArea">Cutting Speed (m<sup>2</sup>/hr):</label>
+                <input type="number" id="cuttingSpeedArea" name="cuttingSpeedArea" value="6" step="0.1">
+            </div>
+            <div class="input-group">
+                <label for="dReuse">Distance for Reuse (km):</label>
+                <input type="number" id="dReuse" name="dReuse" value="100">
+            </div>
+            <div class="input-group">
+                <label for="dNew">Distance for New Material (km):</label>
+                <input type="number" id="dNew" name="dNew" value="100">
+            </div>
+            <button type="button" onclick="submitInput()">Submit</button>
+        </form>
+        
+    </div>
+
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
+            // Existing toggleInputs function...
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Attach event listener to structureType select element
+            document.getElementById('structureType').addEventListener('change', toggleInputs);
+            
+            // Existing submitInput and initial call to toggleInputs...
+            toggleInputs();
+            submitInput();
+        });
+
+        function toggleInputs() {
+            const structureType = document.getElementById('structureType').value;
+            const beamInputs = document.querySelectorAll('.beam-input');
+            const wallInputs = document.querySelectorAll('.wall-input');
+            if (structureType === 'beam') {
+                beamInputs.forEach(input => input.style.display = '');
+                wallInputs.forEach(input => input.style.display = 'none');
+            } else {
+                beamInputs.forEach(input => input.style.display = 'none');
+                wallInputs.forEach(input => input.style.display = '');
+            }
+        }
+
         // Function to handle form submission
         // Placeholder for the actual function that will process the input and update the plot
         function submitInput() {
-            var input1 = document.getElementById('input1').value;
-            var input2 = document.getElementById('input2').value;
-            var input3 = document.getElementById('input3').value;
-            var input4 = document.getElementById('input4').value;
-            var input5 = document.getElementById('input5').value;
-            
-            // AJAX request to Flask
+            const structureType = document.getElementById('structureType').value;
+            const cuttingSpeedArea = document.getElementById('cuttingSpeedArea').value;
+            const dReuse = document.getElementById('dReuse').value;
+            const dNew = document.getElementById('dNew').value;
+            let payload = {
+                cuttingSpeedArea: cuttingSpeedArea,
+                dReuse: dReuse,
+                dNew: dNew,
+                structureType: structureType
+            };
+
+            if (structureType === 'beam') {
+                payload['beamDepth'] = document.getElementById('beamDepth').value;
+                payload['beamWidth'] = document.getElementById('beamWidth').value;
+            } else {
+                payload['slabThickness'] = document.getElementById('slabThickness').value;
+                payload['cutWidth'] = document.getElementById('cutWidth').value;
+                payload['cutLength'] = document.getElementById('cutLength').value;
+            }
+
             fetch('/update_plot', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    input1: input1,
-                    input2: input2,
-                    input3: input3,
-                    input4: input4,
-                    input5: input5
-                })
+                body: JSON.stringify(payload)
             })
-
             .then(response => response.json())
             .then(data => {
-                // Plotly.newPlot('plot', JSON.parse(data));
-                Plotly.newPlot('plot', JSON.parse(data.plot)); // Adjusted to access plot from response object
-                // Update the intersection point message with limited decimal places
-                //document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${parseFloat(data.intersection_points).toFixed(2)} m³`; // Adjusted to display intersection point with 2 decimal places
-              document.getElementById('intersectionPointMessage').innerHTML = `The optimal size of the reused piece is: ${data.intersection_point} m`; // Adjusted to display intersection point
-            
-               });
+                console.log(data); // This will show you exactly what the backend sent
+                Plotly.newPlot('plot', JSON.parse(data.plot));
+                // Check which key exists in the response and update the UI accordingly
+                let message = '';
+                if ('reuse_or_not' in data) {
+                    message = `Takaway message: ${data.reuse_or_not}`;
+                } else if ('intersection_point' in data) {
+                    message = `The optimal size of the reused piece is: ${data.intersection_point} m`;
+                }
+                document.getElementById('intersectionPointMessage').innerHTML = message;
+                 }).catch(error => {
+            console.error('Error:', error);
+        });
         }
+        // Initial call to set inputs according to the default selected structure type
+        toggleInputs();
+
         // Trigger the plot update with default values on page load
         document.addEventListener('DOMContentLoaded', submitInput);
-    </script>
-
-    <script src="https://threejs.org/build/three.js"></script>
-    <script>
-        
-        function visualizeBeam(depth, width, length) {
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        
-            const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-        
-            const geometry = new THREE.BoxGeometry(depth, width, length);
-            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            const cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
-        
-            camera.position.z = 5;
-        
-            function animate() {
-                requestAnimationFrame(animate);
-                renderer.render(scene, camera);
-            }
-            animate();
-            
-        }
-
-        function fetchAndVisualizeBeam() {
-            fetch('/calculate_beam', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    // Example dimensions, replace with actual input fields
-                    length: 2,
-                    width: 0.5,
-                    height: 0.5
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                visualizeBeam(data.depth, data.width, data.length);
-            });
-        }
-        
-        // Example call, replace with actual data from backend
-        visualizeBeam(1, 1, 1);
-        </script>
-        
-
+    </script>    
 
 </body>
 </html>
