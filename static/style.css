@@ -26,8 +26,10 @@ header {
     margin-bottom: 20px;
 }
 #plot {
-    width: 800px;
-    height: 600px;
+    /* width: 800px;
+    height: 600px; */
+    width: 100%;
+    height: auto;
     background-color: #f0f0f0;
     margin: 20px;
 }

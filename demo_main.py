@@ -237,9 +237,9 @@ def demo_main_beam(beam_depth, beam_width,cutting_speed_area, d_reuse, d_new): #
         xaxis_title='Cutting Length in m',
         yaxis_title='Impact in kg CO2eq',
         title='Environmental Impact vs. Cutting Length',
-        autosize=False,
-        width=800,
-        height=600,
+        autosize=True,
+        # width=800,
+        # height=600,
         margin=dict(l=65, r=50, b=65, t=90),
         # yaxis=dict(zeroline=True, zerolinewidth=2, zerolinecolor='black'),  # Emphasize y = 0 line
     )
@@ -480,9 +480,9 @@ def demo_main_wall(wall_thickness, cut_width, cut_length, cutting_speed_area, d_
         title='Environmental Impact Difference Across Wall Dimensions',
         xaxis_title='Wall Width (m)',
         yaxis_title='Wall Height (m)',
-        autosize=False,
-        width=800,
-        height=600,
+        autosize=True,
+        # width=800,
+        # height=600,
         margin=dict(l=65, r=50, b=65, t=90),
         template="simple_white"
     )
