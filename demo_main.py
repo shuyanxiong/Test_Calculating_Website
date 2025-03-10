@@ -336,7 +336,9 @@ def demo_main_wall(wall_thickness, cut_width, cut_length, cutting_speed_area, d_
     gray_electricity_CO2_emission = 0.9230 # kgCO2eq/kWh IPCC2021 EcoInvent 3.10, market for electricity, medium voltage | electricity, medium voltage | Cutoff, U CN
     generator_CO2_emission = 76.4400 # kgCO2eq/hour IPCC2021 EcoInvent 3.10, machine operation, diesel, >= 74.57 kW, generators | machine operation, diesel, >= 74.57 kW, generators | Cutoff, U
 
-    diamond_blade_CO2_emission = (334.123*80/35)/span_blade # kgCO2/h # reference: https://ieeexplore.ieee.org/document/10021341
+    # diamond_blade_CO2_emission = (334.123*80/35)/span_blade # kgCO2/h # reference: https://ieeexplore.ieee.org/document/10021341
+    # updated on Mar 10th 2025
+    diamond_blade_CO2_emission = ((4.051+35.007)*80/35)/span_blade + +295/200 # kgCO2/h # reference: https://ieeexplore.ieee.org/document/10021341
 
     # @ wall saw parameters
     # power = 20 # kW, Hilti wall saw DST 20-CA 
